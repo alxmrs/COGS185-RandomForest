@@ -1,0 +1,7 @@
+__pycache__
+*.zip
+*.scale*
+*.bz2
+*.txt
+poker*
+mnist*
