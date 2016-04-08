@@ -249,23 +249,23 @@ def read_data(data_file_name, n_features=None, n_datapoints=-1):
 
 
 class Data(object):
-
     def __init__(self, data_file_name, n_features=None, n_datapoints=-1, n_threads=None):
         self.file = data_file_name
         self.n_features = n_features
         self.n_datapoints = n_datapoints
         self.n_threads = n_threads
-        self.manager = Manager()
-        self.sema = self.manager.Semaphore()
-        self.dp_counter = self.manager.Value('i', 0)
-        self.event = self.manager.Event()
+        # self.manager = Manager()
+        # self.sema = self.manager.Semaphore()
+        # self.dp_counter = self.manager.Value('i', 0)
+        # self.event = self.manager.Event()
 
     def process_line(self, line):
-
-        with self.sema:
-            if self.dp_counter.value is self.n_datapoints:
-                self.event.set()
-            self.dp_counter.value += 1
+        # with self.sema:
+        #     if self.dp_counter.value == self.n_datapoints:
+        #         self.event.set()
+        #         print('event set')
+        #     self.dp_counter.value += 1
+        #     # print(self.dp_counter.value, self.n_datapoints)
 
         line = line.split(None, 1)
         # In case an instance with all zero features
@@ -291,8 +291,6 @@ class Data(object):
             results = pool.map(self.process_line, f)
             pool.close()
             pool.join()
-            self.event.wait()
-            pool.terminate()
 
         return np.array(results)
 
