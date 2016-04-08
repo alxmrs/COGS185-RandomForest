@@ -215,7 +215,7 @@ class ID3(object):
         return err/N
 
 
-def svm_read_problem(data_file_name, num_features=None):
+def svm_read_problem(data_file_name, n_features=None, n_datapoints=-1):
     """
     Slightly Modified by Alex Rosengarten
     Source: https://github.com/cjlin1/libsvm/blob/master/python/svmutil.py
@@ -225,22 +225,27 @@ def svm_read_problem(data_file_name, num_features=None):
     """
     prob_y = []
     prob_x = []
+    i = 0
     for line in open(data_file_name):
+        if i is n_datapoints:
+            break
         line = line.split(None, 1)
         # In case an instance with all zero features
         if len(line) == 1: line += ['']
         label, features = line
-        if num_features is None:
+        if n_features is None:
             xi = [0 for _ in range(len(features.split()))]
         else:
-            xi = [0 for _ in range(num_features)]
+            xi = [0 for _ in range(n_features)]
         for e in features.split():
             ind, val = e.split(":")
             xi[int(ind)-1] = float(val)
+        i += 1
         prob_y += [float(label)]
         prob_x += [xi]
 
     return prob_y, prob_x
+
 
 class RandomForest(object):
     def __init__(self, train, trees=100, subsample=.10, linspace=100, n_features=None, n_threads=None):
@@ -314,34 +319,35 @@ if __name__ == '__main__':
     # print('Data loaded. Prepping Data...')
 
     print('Reading training and testing data...')
-    poker_y, poker_x = svm_read_problem('poker')
-    poker_t_y, poker_t_x = svm_read_problem('poker.t')
+    y, x = svm_read_problem('poker')
+    y_t, x_t = svm_read_problem('poker.t')
     print('Data loaded.')
 
-    poker_x = np.array(poker_x)
-    poker_y = np.array([poker_y]).T
-    poker_train = np.concatenate((poker_x, poker_y), 1)
+    x = np.array(x)
+    y = np.array([y]).T
+    D = np.concatenate((x, y), 1)
 
-    poker_t_x = np.array(poker_t_x)
-    poker_t_y = np.array([poker_t_y]).T
-    poker_test = np.concatenate((poker_t_x, poker_t_y), 1)
+    x_t = np.array(x_t)
+    y_t = np.array([y_t]).T
+    D_t = np.concatenate((x_t, y_t), 1)
+
+    N, d = D.shape
+
+    inds_train = set(np.random.choice(N, int(N * 0.8), replace=False))
+    inds_all = set(range(N))
+    inds_test = inds_all.difference(inds_train)
+
+    train = [D[i, :] for i in inds_train]
+    train = np.array(train)
+
+    test = [D[i, :] for i in inds_test]
+    test = np.array(test)
+
     print('Data prepped.')
-
-    N, d = poker_train.shape
-
-    train_set_ind = set(np.random.choice(N, int(N * 0.8), replace=False))
-    all_ind = set(range(N))
-    test_set_ind = all_ind.difference(train_set_ind)
-
-    poker_train_sample = [poker_train[i, :] for i in train_set_ind]
-    poker_train_sample = np.array(poker_train_sample)
-
-    poker_test_sample = [poker_train[i, :] for i in test_set_ind]
-    poker_test_sample = np.array(poker_test_sample)
 
 
     print('Generating random forest')
-    forest = RandomForest(poker_train_sample, 1, 0.10, 15, n_features=3)
+    forest = RandomForest(train, 10, 0.10, 15, n_features=3)
     print('Forest generated. Now calculating test error...')
 
-    print('test error: ' + str(forest.error_rate(poker_test_sample)))
+    print('test error: ' + str(forest.error_rate(test)))

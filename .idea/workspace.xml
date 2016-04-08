@@ -24,11 +24,21 @@
       <file leaf-file-name="hw1.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/hw1.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.8960739">
-              <caret line="343" column="47" selection-start-line="343" selection-start-column="47" selection-end-line="343" selection-end-column="47" />
+            <state vertical-scroll-proportion="0.82678986">
+              <caret line="347" column="0" selection-start-line="347" selection-start-column="0" selection-end-line="347" selection-end-column="0" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="results_log.txt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/results_log.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="11" column="60" selection-start-line="11" selection-start-column="60" selection-end-line="11" selection-end-column="60" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -39,6 +49,7 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/hw3.py" />
+        <option value="$PROJECT_DIR$/results_log.txt" />
         <option value="$PROJECT_DIR$/hw1.py" />
       </list>
     </option>
@@ -291,10 +302,18 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/results_log.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="60" selection-start-line="11" selection-start-column="60" selection-end-line="11" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/hw1.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.8960739">
-          <caret line="343" column="47" selection-start-line="343" selection-start-column="47" selection-end-line="343" selection-end-column="47" />
+        <state vertical-scroll-proportion="0.82678986">
+          <caret line="347" column="0" selection-start-line="347" selection-start-column="0" selection-end-line="347" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
