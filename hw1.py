@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plot
 from queue import *
 from multiprocessing.dummy import Pool as ThreadPool
+from multiprocessing.dummy import Value, Semaphore, Manager
 
 DEBUG = True
 
@@ -215,7 +216,7 @@ class ID3(object):
         return err/N
 
 
-def svm_read_problem(data_file_name, n_features=None, n_datapoints=-1):
+def read_data(data_file_name, n_features=None, n_datapoints=-1):
     """
     Slightly Modified by Alex Rosengarten
     Source: https://github.com/cjlin1/libsvm/blob/master/python/svmutil.py
@@ -245,6 +246,55 @@ def svm_read_problem(data_file_name, n_features=None, n_datapoints=-1):
         prob_x += [xi]
 
     return prob_y, prob_x
+
+
+class Data(object):
+
+    def __init__(self, data_file_name, n_features=None, n_datapoints=-1, n_threads=None):
+        self.file = data_file_name
+        self.n_features = n_features
+        self.n_datapoints = n_datapoints
+        self.n_threads = n_threads
+        self.manager = Manager()
+        self.sema = self.manager.Semaphore()
+        self.dp_counter = self.manager.Value('i', 0)
+        self.event = self.manager.Event()
+
+    def process_line(self, line):
+
+        with self.sema:
+            if self.dp_counter.value is self.n_datapoints:
+                self.event.set()
+            self.dp_counter.value += 1
+
+        line = line.split(None, 1)
+        # In case an instance with all zero features
+        if len(line) == 1: line += ['']
+        label, features = line
+        if self.n_features is None:
+            xi = [0.0 for _ in range(len(features.split()))]
+        else:
+            xi = [0.0 for _ in range(self.n_features)]
+        for e in features.split():
+            ind, val = e.split(":")
+            xi[int(ind)-1] = float(val)
+
+        return xi + [float(label)]
+
+    def read_data(self):
+        if self.n_threads is None:
+            pool = ThreadPool()
+        else:
+            pool = ThreadPool(self.n_threads)
+
+        with open(self.file) as f:
+            results = pool.map(self.process_line, f)
+            pool.close()
+            pool.join()
+            self.event.wait()
+            pool.terminate()
+
+        return np.array(results)
 
 
 class RandomForest(object):
@@ -318,18 +368,21 @@ if __name__ == '__main__':
     # # poker_t_y, poker_t_x = svm_read_problem('poker.t')
     # print('Data loaded. Prepping Data...')
 
-    print('Reading training and testing data...')
-    y, x = svm_read_problem('poker')
-    y_t, x_t = svm_read_problem('poker.t')
+    print('Reading data...')
+    # y, x = read_data('mnist8m.scale', n_features=784, n_datapoints=1000)
+    poker = Data('poker', n_features=10, n_datapoints=100)
+    D = poker.read_data()
+    print(D.shape)
+    # y_t, x_t = svm_read_problem('poker.t')
     print('Data loaded.')
 
-    x = np.array(x)
-    y = np.array([y]).T
-    D = np.concatenate((x, y), 1)
+    # x = np.array(x)
+    # y = np.array([y]).T
+    # D = np.concatenate((x, y), 1)
 
-    x_t = np.array(x_t)
-    y_t = np.array([y_t]).T
-    D_t = np.concatenate((x_t, y_t), 1)
+    # x_t = np.array(x_t)
+    # y_t = np.array([y_t]).T
+    # D_t = np.concatenate((x_t, y_t), 1)
 
     N, d = D.shape
 
