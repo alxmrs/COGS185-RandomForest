@@ -1,4 +1,5 @@
 import numpy as np
+import scipy.io
 import matplotlib.pyplot as plot
 from queue import *
 from multiprocessing.dummy import Pool as ThreadPool
@@ -360,6 +361,40 @@ class RandomForest(object):
         return err/N
 
 
+def evenly_distribute_data(data):
+    data_by_class = {}
+    freq = {}
+
+    for d in data:
+        if d[-1] not in freq:
+            data_by_class[d[-1]] = [d]
+            freq[d[-1]] = 0.0
+        else:
+            data_by_class[d[-1]] = np.concatenate((data_by_class[d[-1]], [d]), 0)
+
+        freq[d[-1]] += 1.0
+
+    print(freq)
+    smallest_class = min(freq.keys(), key=(lambda key: freq[key]))
+    smallest_class_size = freq[smallest_class]
+    smallest_class_data = data_by_class[smallest_class]
+
+    new_dataset = smallest_class_data
+
+    for k in data_by_class.keys():
+        curr_class = data_by_class[k]
+
+        inds = np.random.choice(curr_class.shape[0], smallest_class_size, replace=False)
+        rand_sample = [curr_class[i, :] for i in inds]
+        rand_sample = np.array(rand_sample)
+
+        new_dataset = np.concatenate((new_dataset, rand_sample), 0)
+    #
+    # return new_dataset
+
+    np.savetxt('./even_data', new_dataset, delimiter=',')
+
+
 if __name__ == '__main__':
     # print('Reading training and testing data...')
     # covtype_y, covtype_x = svm_read_problem('covtype.scale01', 54)
@@ -368,16 +403,49 @@ if __name__ == '__main__':
 
     print('Reading data...')
     # y, x = read_data('mnist8m.scale', n_features=784, n_datapoints=1000)
-    poker = Data('poker', n_features=10, n_datapoints=100)
+    poker = Data('poker', n_features=10)
     D = poker.read_data()
-    print(D.shape)
+
+    # mat_label = scipy.io.loadmat('./MNSIT_mats/training_labels.mat')
+    # mat_imgs  = scipy.io.loadmat('./MNSIT_mats/training_images.mat')
+    #
+    # mat_t_label = scipy.io.loadmat('./MNSIT_mats/test_labels.mat')
+    # mat_t_imgs  = scipy.io.loadmat('./MNSIT_mats/test_images.mat')
+    #
+    # D_x = mat_imgs['training_images']
+    # D_y = mat_label['training_labels']
+    #
+    # Dt_x = mat_t_imgs['test_images']
+    # Dt_y = mat_t_label['test_labels']
+
+    # label = {}
+    # for y in D_y:
+    #     if y[0] not in label:
+    #         label[y[0]] = 0.0
+    #     label[y[0]] += 1
+    # print(label)
+    #
+    # for k in label.keys():
+    #     label[k] = label[k] / D_y.shape[0]
+    #
+    # print(label)
+
+    # D = np.concatenate((D_x, D_y), 1)
+    # Dt = np.concatenate((Dt_x, Dt_y), 1)
+
     # y_t, x_t = svm_read_problem('poker.t')
     print('Data loaded.')
+
+
+    # evenly_distribute_data(D)
+    # print('data evenly distributed')
+    # print(D.shape)
+
 
     # x = np.array(x)
     # y = np.array([y]).T
     # D = np.concatenate((x, y), 1)
-
+    #
     # x_t = np.array(x_t)
     # y_t = np.array([y_t]).T
     # D_t = np.concatenate((x_t, y_t), 1)
@@ -395,10 +463,9 @@ if __name__ == '__main__':
     test = np.array(test)
 
     print('Data prepped.')
-
-
+    #
     print('Generating random forest')
-    forest = RandomForest(train, 10, 0.10, 15, n_features=3)
-    print('Forest generated. Now calculating test error...')
-
+    forest = RandomForest(test, 10, 0.20, 20)
+    # print('Forest generated. Now calculating test error...')
+    #
     print('test error: ' + str(forest.error_rate(test)))
