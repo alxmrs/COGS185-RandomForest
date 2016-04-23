@@ -367,7 +367,6 @@ class Data(object):
         except ValueError:
             return False
 
-
     def read_data(self):
         '''
         Reads the data into program in parallel via a thread pool. Uses the higher-order function Map to call
