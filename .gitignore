@@ -5,3 +5,10 @@ __pycache__
 *.txt
 poker*
 mnist*
+*.ipynb
+*.aux
+*.log
+*.out
+*.tex
+*.t
+*.pdf

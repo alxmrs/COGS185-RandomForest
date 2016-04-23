@@ -1,13 +1,13 @@
 import numpy as np
 import scipy.io
-import matplotlib.pyplot as plot
 from queue import *
-from multiprocessing.dummy import Pool as ThreadPool
-from multiprocessing.dummy import Value, Semaphore, Manager
+from multiprocessing import Pool as ThreadPool
 
-DEBUG = True
 
 class Node(object):
+    '''
+    Node class: basic unit of a decision tree
+    '''
     def __init__(self, left=None, right=None, data=None, rule=(None, None), label=None):
         self.left = left
         self.right = right
@@ -23,7 +23,18 @@ class Node(object):
 
 
 class ID3(object):
+    '''
+    ID3 Decision Tree
+    '''
     def __init__(self, train, linspace=100, n_features=-1):
+        '''
+        :param train: Training data set
+        :param linspace: number of evenly spaced points over the feature space to search through. Default=100
+        :param n_features: number of features to search through when making splitting rules. When entering a smaller
+        number than the dimensions fo the training set, the algorithm will randomly selected this many features to
+        search through when deciding the best feature to use for the splitting rule. -1 means search through all the
+        features. Default: -1
+        '''
         self.train = train
         self.linspace = linspace
         self.num_features = n_features
@@ -31,8 +42,9 @@ class ID3(object):
 
     def information_gain(self, f, t, data):
         '''
-        Calculates the decrease in conditional entropy given a condition Z: IG(Z) = H(X) - H(X|Z) where H(X) is the
-        entropy of labels distributed at a node and H(X|Z) is the entropy given the group its apart of (if f <= t or not)
+        Calculates the decrease in conditional entropy given condition Z (if X[f] <= t): Information gain is
+        IG(Z) = H(X) - H(X|Z) where H(X) is the entropy distributed at a node and H(X|Z) is the entropy given the node
+        splitting rule.
         :param f: feature
         :param t: threshold
         :param data: data
@@ -46,15 +58,18 @@ class ID3(object):
         right = []
         right_freq = {}
 
-        num_classes = np.max(data[:, -1])
-        # print(int(num_classes+1))
-
-        for i in range(int(num_classes+1)):
-            left_freq[i] = 0
-            right_freq[i] = 0
-            label_freq[i] = 0
-
         for i in range(N):
+
+            # Initialize dictionaries
+            if data[i, -1] not in label_freq:
+                label_freq[data[i, -1]] = 0.0
+
+            if data[i, -1] not in right_freq:
+                right_freq[data[i, -1]] = 0.0
+
+            if data[i, -1] not in left_freq:
+                left_freq[data[i, -1]] = 0.0
+
             label_freq[data[i, -1]] += 1.0
 
             if data[i, f] <= t:
@@ -96,6 +111,12 @@ class ID3(object):
         return H_x - H_x_z
 
     def generate_tree(self, data):
+        '''
+        Build a decision tree from the training data using best information_gain as the criteria for splitting. Does not
+        include pruning.
+        :param data: training data
+        :return: root of newly constructed decision tree
+        '''
         self.root = Node(data=data, rule=(None, None))
 
         to_explore = Queue(maxsize=np.shape(data)[0])
@@ -137,9 +158,9 @@ class ID3(object):
                             feature = f
                             thr_i = t
                         # Find last acceptable threshold
-                        # elif new_ent == max_ent:
-                        #     # feature = f
-                        #     thr_f = t
+                        elif new_ent == max_ent:
+                            # feature = f
+                            thr_f = t
 
                 # Calculate midpoint of range of acceptable thresholds, if applicable
                 if thr_f >= thr_i:
@@ -166,14 +187,12 @@ class ID3(object):
                 else:
                     data_left = data_left[1:, :]
                     left_child = Node(data=data_left)
-#                     print('Left: ' + str(left))
 
                 if np.shape(data_right)[0] == 1:
                     right_child = None
                 else:
                     data_right = data_right[1:, :]
                     right_child = Node(data=data_right)
-#                     print('Right: ' + str(right))
 
                 current_node.left = left_child
                 current_node.right = right_child
@@ -188,11 +207,16 @@ class ID3(object):
                 count += 1
             else:
                 current_node.label = current_node.data[0, -1]
-#                 print('label: ' + str(N) + ' ' + str(current_node.label))
 
         return self.root
 
     def parse(self, data_point, root):
+        '''
+        Recursively parse tree to find the class of a data point.
+        :param data_point: non-labeled data point
+        :param root: root of the subtree
+        :return: label of data point
+        '''
         if root.label is not None:
             return root.label
         else:
@@ -205,9 +229,24 @@ class ID3(object):
                     return self.parse(data_point, root.right)
 
     def predict(self, data_point):
-        return self.parse(data_point, self.root)
+        '''
+        Find the label or class of a data point.
+        :param data_point:
+        :return:
+        '''
+        prediction = self.parse(data_point, self.root)
+        # Return "don't know" class if no class/label found, otherwise return prediction
+        if prediction is None:
+            return -1
+        else:
+            return prediction
 
     def error_rate(self, test):
+        '''
+        Calculate error rate of decision tree on testing data set
+        :param test: test data set --> [X | y]
+        :return: proportion of wrong classifications over size of testing data set
+        '''
         N, d = np.shape(test)
 
         err = 0
@@ -250,24 +289,29 @@ def read_data(data_file_name, n_features=None, n_datapoints=-1):
 
 
 class Data(object):
-    def __init__(self, data_file_name, n_features=None, n_datapoints=-1, n_threads=None):
+    '''
+    A parallelized way of importing LIBSVM-formatted data from a file. To use, create a Data object with the proper
+    parameters and call read_data().
+    '''
+    def __init__(self, data_file_name, n_features=None, n_datapoints=-1, n_workers=None):
+        '''
+
+        :param data_file_name: data file
+        :param n_features: number of features in the data set
+        :param n_datapoints: [non-functional feature] number of data points to import before stopping
+        :param n_workers: number of threads or processes working to import the data
+        '''
         self.file = data_file_name
         self.n_features = n_features
         self.n_datapoints = n_datapoints
-        self.n_threads = n_threads
-        # self.manager = Manager()
-        # self.sema = self.manager.Semaphore()
-        # self.dp_counter = self.manager.Value('i', 0)
-        # self.event = self.manager.Event()
+        self.n_threads = n_workers
 
     def process_line(self, line):
-        # with self.sema:
-        #     if self.dp_counter.value == self.n_datapoints:
-        #         self.event.set()
-        #         print('event set')
-        #     self.dp_counter.value += 1
-        #     # print(self.dp_counter.value, self.n_datapoints)
-
+        '''
+        Process one line of data from the data file.
+        :param line: the line of the file to process
+        :return: An array of data with the label at the right most column --> [X | y]
+        '''
         line = line.split(None, 1)
         # In case an instance with all zero features
         if len(line) == 1: line += ['']
@@ -283,6 +327,11 @@ class Data(object):
         return xi + [float(label)]
 
     def read_data(self):
+        '''
+        Reads the data into program in parallel via a thread pool. Uses the higher-order function Map to call
+        process_line on the input file.
+        :return: dataset, in numpy array format.
+        '''
         if self.n_threads is None:
             pool = ThreadPool()
         else:
@@ -297,7 +346,19 @@ class Data(object):
 
 
 class RandomForest(object):
-    def __init__(self, train, trees=100, subsample=.10, linspace=100, n_features=None, n_threads=None):
+    '''
+    Random Forest, composed of ID3 decision trees.
+    '''
+    def __init__(self, train, trees=100, subsample=.10, linspace=100, n_features=None, n_workers=None):
+        '''
+
+        :param train: training set, required
+        :param trees: Number of trees. Default: 100
+        :param subsample: proportion of the training set each used to build each decision tree. Default: 10%
+        :param linspace: number of evenly spaced points over the feature space to search through. Default=100
+        :param n_features: number of features in dataset (training set)
+        :param n_workers: number of workers in thread pool
+        '''
         self.training_set = train
         self.N, self.D = self.training_set.shape
         self.num_trees = trees
@@ -309,27 +370,35 @@ class RandomForest(object):
             self.num_features = n_features
 
         self.subsamples = self.bootstrap()
-        self.forest = self.generate_forest(n_threads)
+        self.forest = self.generate_forest(n_workers)
 
     def bootstrap(self):
+        '''
+        Generate random (with replacement) subsample of data set.
+        :return:
+        '''
         inds = [np.random.choice(self.N, self.subsample_size) for _ in range(self.num_trees)]
         return [np.array([self.training_set[i] for i in ind]) for ind in inds]
 
-    # def generate_forest(self):
-    #     trees = []
-    #     for i in range(self.num_trees):
-    #         trees.append(ID3(self.subsamples[i],  self.linspace, n_features=self.num_features))
-    #         print(str(i) + ' of ' + str(self.num_trees) + ' complete.')
-    #     return trees
-
     def create_tree(self, sample):
+        '''
+        Create a decision tree
+        :param sample: data set to build tree
+        :return: Trained decision tree
+        '''
         return ID3(sample, linspace=self.linspace, n_features=self.num_features)
 
-    def generate_forest(self, n_threads=None):
-        if n_threads is None:
+    def generate_forest(self, n_workers=None):
+        '''
+        Create forest of decision trees. Works in parallel via the higher order function Map. Work is split up in a pool
+        of workers that each call the create_tree function.
+        :param n_workers: number of workers in the thread/process pool
+        :return: list of decision trees in the forest.
+        '''
+        if n_workers is None:
             pool = ThreadPool()
         else:
-            pool = ThreadPool(n_threads)
+            pool = ThreadPool(n_workers)
 
         forest = pool.map(self.create_tree, self.subsamples)
         pool.close()
@@ -337,10 +406,17 @@ class RandomForest(object):
         return forest
 
     def predict(self, data_point):
+        '''
+        Map the data point to a class/label. Classifies the input based on a equally weighted voting from the ensemble
+        of decision trees in the forest.
+        :param data_point: test data point to be classified
+        :return: (label with the most votes, confidence of the prediction)
+        '''
         labels = {}
         if self.forest is None:
             return None
 
+        total = 0.0
         for tree in self.forest:
             p = tree.predict(data_point)
 
@@ -348,17 +424,50 @@ class RandomForest(object):
                 labels[p] = 0.0
 
             labels[p] += 1.0
+            total += 1.0
 
-        return max(labels.keys(), key=(lambda key: labels[key]))  # return label with highest frequency in dictionary
+        max_label = max(labels.keys(), key=(lambda key: labels[key]))  # return label with highest frequency in dictionary
+        # print('RF predict, probability: ')
+        # print((labels[max_label]), labels[max_label] / total)
+        return max_label, labels[max_label] / total
 
     def error_rate(self, test):
+        '''
+        Calculates the error rate of the trained forest against a test data set
+        :param test: a testing data set, [X | y]
+        :return: number of errors over total number of examples
+        '''
         N, d = np.shape(test)
 
         err = 0
         for i in range(N):
-            if self.predict(test[i, :-1]) != test[i, -1]:
+            if self.predict(test[i, :-1])[0] != test[i, -1]:
                 err += 1.0
         return err/N
+
+    def confusion_mx(self, test, n_classes):
+        '''
+        Cij/Nj where Cij is the number of test examples that have label
+        j but are classified as label i by the classifier, and Nj is the
+        number of test examples that have label j.
+        :param test:
+        :param n_classes:
+        :return:
+        '''
+        N, d = np.shape(test)
+
+        # cmx = np.zeros(n_classes+1, n_classes)
+        Cij = np.zeros((n_classes+1, n_classes))
+        Nj  = np.zeros((n_classes, 1))
+
+        for i in range(N):
+            prediction = self.predict(test[i, :-1])[0]
+            actual     = test[i, -1]
+
+            Cij[prediction+1, actual] += 1
+            Nj[actual] += 1
+
+        return Cij / Nj.T
 
 
 def evenly_distribute_data(data):
@@ -395,77 +504,218 @@ def evenly_distribute_data(data):
     np.savetxt('./even_data', new_dataset, delimiter=',')
 
 
+def ova_confusion_err(predictions, test, n_classes):
+    '''
+    Calucates confusion matrix and error rate for one versus all classification. Uses confidence measures to pick the
+    best prediction out of the competing classifiers.
+    :param predictions: a matrix of predictions. Each entry in the matrix is a tuple of predictions and confidence vals
+    :param test: the testing data set
+    :param n_classes: number of classes
+    :return: (confusion matrix, error rate)
+    '''
+    Cij = np.zeros((n_classes+1, n_classes)) # Include "Don't Know" Class
+    Nj  = np.zeros((n_classes, 1))
+
+    N, d = test.shape
+    err = 0.0
+
+    for i in range(N):
+
+        # Search through each classifiers prediction, return
+        total_space = 0.0
+        max_c = -1  # max confidence
+        min_c = 1   # min confidence (if all negative)
+        ppred = -1  # final prediction
+        npred = -1
+        all_neg = True
+        for j, p_tup in enumerate(predictions[i, :]):
+            pred, conf = p_tup
+            total_space += conf
+
+            # print(p_tup, end=' ')
+
+            # find negative prediction with min confidence
+            if conf < min_c and pred == -1:
+                npred = pred
+                min_c = conf
+
+            # if two negative classes have equal confidence, return "don't know"
+            elif conf == min_c and pred == -1:
+                npred = -1
+
+            # find positive prediction with max confidence
+            elif conf > max_c and pred == 1:
+                all_neg = False
+                max_c = conf
+                ppred = j
+
+            # if there are two positive classes with equal confidence, return "don't know"
+            elif conf == max_c and pred == 1:
+                ppred = -1
+
+        # print('fred: ' + str(max_c) + ' ' + str(fpred))
+
+        # If there were all negative predictions, choose prediction with best confidence
+        if all_neg:
+            prediction = npred
+        else:
+            prediction = ppred
+
+        actual = test[i, -1]
+
+        if prediction != actual:
+            err += 1.0
+
+        Cij[prediction + 1, actual] += 1
+        Nj[actual] += 1
+
+    return Cij / Nj.T, err/N
+
+
+def calc_freq(ys):
+    '''
+    Calculates frequency of every class, prints to standard out.
+    :param ys: labels, or y values
+    '''
+    label = {}
+    for y in ys:
+        if y not in label:
+            label[y] = 0.0
+        label[y] += 1
+    print(label)
+
+    for k in label.keys():
+        label[k] = label[k] / D_y.shape[0]
+
+    print(label)
+
+
+def suit_rank_to_card_number(poker_data):
+    '''
+    maps the (suit, rank) format of poker data into a single number representing 'card number'.
+    :param poker_data: poker data set
+    :return: new data set matrix, in numpy format
+    '''
+    N, d = poker_data.shape
+    D_new = np.zeros((N, 6))
+    D_new[:, -1] = poker_data[:, -1]
+    for row in range(N):
+        for col in range(5):
+            suit, rank = poker_data[row, col*2:col*2+2]
+            card = (suit-1)*13+rank
+            D_new[row, col] = card
+
+    return D_new
+
 if __name__ == '__main__':
-    # print('Reading training and testing data...')
-    # covtype_y, covtype_x = svm_read_problem('covtype.scale01', 54)
-    # # poker_t_y, poker_t_x = svm_read_problem('poker.t')
-    # print('Data loaded. Prepping Data...')
+    '''
+    Main method
+    '''
+
+    dataset = 'MNIST'
 
     print('Reading data...')
-    # y, x = read_data('mnist8m.scale', n_features=784, n_datapoints=1000)
-    poker = Data('poker', n_features=10)
-    D = poker.read_data()
 
-    # mat_label = scipy.io.loadmat('./MNSIT_mats/training_labels.mat')
-    # mat_imgs  = scipy.io.loadmat('./MNSIT_mats/training_images.mat')
-    #
-    # mat_t_label = scipy.io.loadmat('./MNSIT_mats/test_labels.mat')
-    # mat_t_imgs  = scipy.io.loadmat('./MNSIT_mats/test_images.mat')
-    #
-    # D_x = mat_imgs['training_images']
-    # D_y = mat_label['training_labels']
-    #
-    # Dt_x = mat_t_imgs['test_images']
-    # Dt_y = mat_t_label['test_labels']
+    if dataset == 'MNIST':
+        ## MNIST dataset prep
+        mat_label = scipy.io.loadmat('./MNSIT_mats/training_labels.mat')
+        mat_imgs  = scipy.io.loadmat('./MNSIT_mats/training_images.mat')
 
-    # label = {}
-    # for y in D_y:
-    #     if y[0] not in label:
-    #         label[y[0]] = 0.0
-    #     label[y[0]] += 1
-    # print(label)
-    #
-    # for k in label.keys():
-    #     label[k] = label[k] / D_y.shape[0]
-    #
-    # print(label)
+        mat_t_label = scipy.io.loadmat('./MNSIT_mats/test_labels.mat')
+        mat_t_imgs  = scipy.io.loadmat('./MNSIT_mats/test_images.mat')
 
-    # D = np.concatenate((D_x, D_y), 1)
-    # Dt = np.concatenate((Dt_x, Dt_y), 1)
+        print('Data loaded.')
 
-    # y_t, x_t = svm_read_problem('poker.t')
-    print('Data loaded.')
+        D_x = mat_imgs['training_images']
+        D_y = mat_label['training_labels']
+
+        Dt_x = mat_t_imgs['test_images']
+        Dt_y = mat_t_label['test_labels']
 
 
-    # evenly_distribute_data(D)
-    # print('data evenly distributed')
-    # print(D.shape)
+        D = np.concatenate((D_x, D_y), 1)
+        Dt = np.concatenate((Dt_x, Dt_y), 1)
 
+        train = D
+        test = Dt
 
-    # x = np.array(x)
-    # y = np.array([y]).T
-    # D = np.concatenate((x, y), 1)
-    #
-    # x_t = np.array(x_t)
-    # y_t = np.array([y_t]).T
-    # D_t = np.concatenate((x_t, y_t), 1)
+        # print(D.shape)
+        # print(Dt.shape)
 
-    N, d = D.shape
+    else:
+        ## Poker dataset prep
+        poker = Data('poker', n_features=10)
+        poker_test = Data('poker.t', n_features=10)
 
-    inds_train = set(np.random.choice(N, int(N * 0.8), replace=False))
-    inds_all = set(range(N))
-    inds_test = inds_all.difference(inds_train)
+        D = poker.read_data()
+        Dt = poker_test.read_data()
+        print('Data loaded.')
 
-    train = [D[i, :] for i in inds_train]
-    train = np.array(train)
+        # D = suit_rank_to_card_number(D)
 
-    test = [D[i, :] for i in inds_test]
-    test = np.array(test)
+        N, d = D.shape
+        Nt, dt = Dt.shape
 
+        inds_test = set(np.random.choice(Nt, int(N*0.2), replace=False))
+        test = [Dt[i, :] for i in inds_test]
+        test = np.array(test)
+        train = D
+
+        # test = suit_rank_to_card_number(test)
+        # train = suit_rank_to_card_number(train)
+
+    # calc_freq(D[:,-1])
     print('Data prepped.')
-    #
-    print('Generating random forest')
-    forest = RandomForest(test, 10, 0.20, 20)
-    # print('Forest generated. Now calculating test error...')
-    #
-    print('test error: ' + str(forest.error_rate(test)))
+
+
+    ## Muliclass prediction
+    print('Generating Multiclass random forests')
+
+    for j in [.0001, .001, .01, .1]:
+        for i in [1, 10, 100]:
+            print('parameters: ', end='')
+            print((i, j, 20))
+            forest = RandomForest(train, i, j, 20)
+            print('Forest generated. Now calculating test error...')
+            print('test error: ' + str(forest.error_rate(test)))
+            print('Confusion Matrix: ')
+            print(forest.confusion_mx(test, n_classes=10))
+
+    ## OVA
+    print('Generating OVA Random Forests')
+    n_classes = 10
+
+    Nt, dt = test.shape
+
+    for j in [.2]:
+        for i in [1, 10, 100]:
+            print('parameters: ', end='')
+            param = (i, j, 20)
+            print(param)
+
+            # Train OVA classes
+            classifiers = []
+            for c in range(n_classes):
+
+                tmp_D = np.copy(D)
+                D_label = tmp_D[:, -1]
+                D_label[D_label != c] = -1.0
+                D_label[D_label == c] = 1.0
+                # print(np.sum(D_label))
+                tmp_D[:, -1] = D_label
+
+                tmp_forest = RandomForest(train=tmp_D, trees=i, subsample=j, linspace=20)
+                classifiers.append(tmp_forest)
+
+            predictions = np.zeros((Nt, n_classes), dtype=tuple)
+
+            # Test OVA classes
+            for l, c in enumerate(classifiers):
+                for m in range(Nt):
+                    predictions[m, l] = c.predict(test[m, :-1])
+
+            # Gen Confusion Matrix
+            CMX, err = ova_confusion_err(predictions, test, n_classes)
+            print(err)
+            print(CMX)
+
