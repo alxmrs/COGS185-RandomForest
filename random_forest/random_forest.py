@@ -293,19 +293,21 @@ class Data(object):
     A parallelized way of importing LIBSVM-formatted data from a file. To use, create a Data object with the proper
     parameters and call read_data().
     '''
-    def __init__(self, data_file_name, n_features=None, n_datapoints=-1, n_workers=None, datatype='SVM', delim=None):
+    def __init__(self, data_file_name, n_features=None, n_datapoints=-1, n_workers=None, filetype='SVM', delim=None):
         '''
-
         :param data_file_name: data file
         :param n_features: number of features in the data set
         :param n_datapoints: [non-functional feature] number of data points to import before stopping
         :param n_workers: number of threads or processes working to import the data
+        :param filetype:
+        :param delim:
+        :return:
         '''
         self.file = data_file_name
         self.n_features = n_features
         self.n_datapoints = n_datapoints
         self.n_threads = n_workers
-        self.datatype = datatype
+        self.filetype = filetype
         self.delimiter = delim
 
     def process_svm_line(self, line):
@@ -331,7 +333,40 @@ class Data(object):
         return xi + [float(label)]
 
     def process_csv_line(self, line):
-        return [v for v in line.strip().split(self.delimiter)]
+        return map(self.determine_data_type, line.strip().split())
+
+    def determine_data_type(self, elem):
+        if self.is_float(elem) and '.' in elem:
+            return float(elem)
+        elif self.is_int(elem):
+            return int(elem)
+        else:
+            return str(elem)
+
+    @staticmethod
+    def is_float(self, s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
+    def is_int(self, s):
+        try:
+            int(s)
+            return True
+        except ValueError:
+            return False
+
+    @staticmethod
+    def is_complex(self, s):
+        try:
+            complex(s)
+            return True
+        except ValueError:
+            return False
+
 
     def read_data(self):
         '''
@@ -345,7 +380,7 @@ class Data(object):
             pool = Pool(self.n_threads)
 
         with open(self.file) as f:
-            if self.datatype == 'SVM':
+            if self.filetype == 'SVM':
                 results = pool.map(self.process_svm_line, f)
             else:
                 results = pool.map(self.process_csv_line, f)
