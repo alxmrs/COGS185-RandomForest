@@ -354,8 +354,6 @@ class Data(object):
 
         return np.array(results)
 
-    def read_csv_data(self):
-
 
 class RandomForest(object):
     '''
