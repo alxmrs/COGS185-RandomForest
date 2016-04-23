@@ -15,3 +15,4 @@ mnist*
 *.cls
 *.gz
 .idea
+.ipynb_checkpoints
