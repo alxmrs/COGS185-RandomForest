@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.io
 from queue import *
-from multiprocessing import Pool as ThreadPool
+from multiprocessing import Pool
 
 
 class Node(object):
@@ -333,9 +333,9 @@ class Data(object):
         :return: dataset, in numpy array format.
         '''
         if self.n_threads is None:
-            pool = ThreadPool()
+            pool = Pool()
         else:
-            pool = ThreadPool(self.n_threads)
+            pool = Pool(self.n_threads)
 
         with open(self.file) as f:
             results = pool.map(self.process_line, f)
@@ -396,9 +396,9 @@ class RandomForest(object):
         :return: list of decision trees in the forest.
         '''
         if n_workers is None:
-            pool = ThreadPool()
+            pool = Pool()
         else:
-            pool = ThreadPool(n_workers)
+            pool = Pool(n_workers)
 
         forest = pool.map(self.create_tree, self.subsamples)
         pool.close()
