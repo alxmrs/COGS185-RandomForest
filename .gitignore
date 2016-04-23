@@ -16,3 +16,4 @@ mnist*
 *.gz
 .idea
 .ipynb_checkpoints
+read_data.py
