@@ -333,7 +333,7 @@ class Data(object):
         return xi + [float(label)]
 
     def process_csv_line(self, line):
-        return map(self.determine_data_type, line.strip().split())
+        return [self.determine_data_type(v) for v in line.strip().split(self.delimiter)]
 
     def determine_data_type(self, elem):
         if self.is_float(elem) and '.' in elem:
@@ -366,6 +366,7 @@ class Data(object):
             return True
         except ValueError:
             return False
+
 
     def read_data(self):
         '''
