@@ -343,7 +343,6 @@ class Data(object):
         else:
             return str(elem)
 
-    @staticmethod
     def is_float(self, s):
         try:
             float(s)
@@ -351,7 +350,6 @@ class Data(object):
         except ValueError:
             return False
 
-    @staticmethod
     def is_int(self, s):
         try:
             int(s)
@@ -359,14 +357,12 @@ class Data(object):
         except ValueError:
             return False
 
-    @staticmethod
     def is_complex(self, s):
         try:
             complex(s)
             return True
         except ValueError:
             return False
-
 
     def read_data(self):
         '''
