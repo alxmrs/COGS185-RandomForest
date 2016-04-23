@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="3309f019-865b-4b84-a8da-d6cb9c9d3dde" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/random_forest.py" afterPath="$PROJECT_DIR$/random_forest.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/random_forest/__init__.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/random_forest.py" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="HW1.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -22,28 +24,46 @@
     <favorites_list name="HW1" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="random_forest.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/random_forest.py">
+    <leaf>
+      <file leaf-file-name="__init__.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/random_forest/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.101580136">
-              <caret line="3" column="32" selection-start-line="3" selection-start-column="32" selection-end-line="3" selection-end-column="32" />
+            <state vertical-scroll-proportion="0.033707865">
+              <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="random_forest.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/random_forest/random_forest.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
+                <element signature="e#114#538#0" expanded="false" />
+                <element signature="e#564#8437#0" expanded="false" />
+                <element signature="e#8509#9426#0" expanded="false" />
+                <element signature="e#9453#11428#0" expanded="false" />
+                <element signature="e#11463#15792#0" expanded="false" />
                 <element signature="e#15833#16756#0" expanded="false" />
-                <marker date="1461375801000" expanded="true" signature="96:538" placeholder="..." />
-                <marker date="1461375801000" expanded="true" signature="15809:16756" placeholder="..." />
-                <marker date="1461375801000" expanded="true" signature="16143:16696" placeholder="..." />
-                <marker date="1461375801000" expanded="true" signature="17922:17959" placeholder="..." />
-                <marker date="1461375801000" expanded="true" signature="20690:20985" placeholder="..." />
-                <marker date="1461375801000" expanded="true" signature="21310:22938" placeholder="..." />
-                <marker date="1461375801000" expanded="true" signature="21318:21882" placeholder="..." />
+                <element signature="e#16816#18929#0" expanded="false" />
+                <element signature="e#18955#19280#0" expanded="false" />
+                <element signature="e#19329#19817#0" expanded="false" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
     </leaf>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -56,13 +76,14 @@
         <option value="$PROJECT_DIR$/read_data.py" />
         <option value="$PROJECT_DIR$/hw1.py" />
         <option value="$PROJECT_DIR$/random_forest.py" />
+        <option value="$PROJECT_DIR$/random_forest/__init__.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="4" />
     <option name="y" value="23" />
-    <option name="width" value="1436" />
+    <option name="width" value="718" />
     <option name="height" value="877" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
@@ -90,6 +111,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -109,9 +131,22 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="HW1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="HW1" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="random_forest" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="RunManager">
@@ -252,16 +287,16 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="4" y="23" width="1436" height="877" extended-state="6" />
+    <frame x="4" y="23" width="718" height="877" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24946997" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.50645626" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.29987293" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.39898348" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -296,9 +331,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#18#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -307,24 +339,6 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="128" column="0" selection-start-line="128" selection-start-column="0" selection-end-line="128" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/random_forest.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#15833#16756#0" expanded="false" />
-            <marker date="1461375801000" expanded="true" signature="96:538" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="15809:16756" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="16143:16696" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="17922:17959" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="20690:20985" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="21310:22938" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="21318:21882" placeholder="..." />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -336,31 +350,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/random_forest.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-            <element signature="e#15833#16756#0" expanded="false" />
-            <marker date="1461375801000" expanded="true" signature="96:538" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="15809:16756" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="16143:16696" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="17922:17959" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="20690:20985" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="21310:22938" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="21318:21882" placeholder="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/read_data.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
-          <folding>
-            <element signature="e#0#18#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -372,21 +365,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/random_forest.py">
+    <entry file="file://$PROJECT_DIR$/random_forest/random_forest.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.101580136">
-          <caret line="3" column="32" selection-start-line="3" selection-start-column="32" selection-end-line="3" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#114#538#0" expanded="false" />
+            <element signature="e#564#8437#0" expanded="false" />
+            <element signature="e#8509#9426#0" expanded="false" />
+            <element signature="e#9453#11428#0" expanded="false" />
+            <element signature="e#11463#15792#0" expanded="false" />
             <element signature="e#15833#16756#0" expanded="false" />
-            <marker date="1461375801000" expanded="true" signature="96:538" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="15809:16756" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="16143:16696" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="17922:17959" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="20690:20985" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="21310:22938" placeholder="..." />
-            <marker date="1461375801000" expanded="true" signature="21318:21882" placeholder="..." />
+            <element signature="e#16816#18929#0" expanded="false" />
+            <element signature="e#18955#19280#0" expanded="false" />
+            <element signature="e#19329#19817#0" expanded="false" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/random_forest/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.033707865">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
