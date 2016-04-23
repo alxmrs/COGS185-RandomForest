@@ -14,3 +14,4 @@ mnist*
 *.pdf
 *.cls
 *.gz
+.idea
