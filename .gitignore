@@ -12,3 +12,5 @@ mnist*
 *.tex
 *.t
 *.pdf
+*.cls
+*.gz
