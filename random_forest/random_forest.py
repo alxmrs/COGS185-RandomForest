@@ -293,7 +293,7 @@ class Data(object):
     A parallelized way of importing LIBSVM-formatted data from a file. To use, create a Data object with the proper
     parameters and call read_data().
     '''
-    def __init__(self, data_file_name, n_features=None, n_datapoints=-1, n_workers=None):
+    def __init__(self, data_file_name, n_features=None, n_datapoints=-1, n_workers=None, datatype='SVM', delim=None):
         '''
 
         :param data_file_name: data file
@@ -305,10 +305,14 @@ class Data(object):
         self.n_features = n_features
         self.n_datapoints = n_datapoints
         self.n_threads = n_workers
+        self.datatype = datatype
+        self.delimiter = delim
 
-    def process_line(self, line):
+    def process_svm_line(self, line):
         '''
-        Process one line of data from the data file.
+        Process one line of data from a SVM formated data file.
+        See following for example datasets:
+        http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/multiclass.html
         :param line: the line of the file to process
         :return: An array of data with the label at the right most column --> [X | y]
         '''
@@ -326,6 +330,9 @@ class Data(object):
 
         return xi + [float(label)]
 
+    def process_csv_line(self, line):
+        return [v for v in line.strip().split(self.delimiter)]
+
     def read_data(self):
         '''
         Reads the data into program in parallel via a thread pool. Uses the higher-order function Map to call
@@ -338,11 +345,16 @@ class Data(object):
             pool = Pool(self.n_threads)
 
         with open(self.file) as f:
-            results = pool.map(self.process_line, f)
+            if self.datatype == 'SVM':
+                results = pool.map(self.process_svm_line, f)
+            else:
+                results = pool.map(self.process_csv_line, f)
             pool.close()
             pool.join()
 
         return np.array(results)
+
+    def read_csv_data(self):
 
 
 class RandomForest(object):

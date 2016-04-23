@@ -8,4 +8,7 @@ setup(name='random_forest',
       author_email='alexrosengarten@gmail.com',
       license='MIT',
       packages=['random_forest'],
+      install_requires=[
+            'numpy',
+      ],
       zip_safe=False)

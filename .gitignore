@@ -17,3 +17,6 @@ mnist*
 .idea
 .ipynb_checkpoints
 read_data.py
+build/
+dist/
+random_forest.egg-info/
