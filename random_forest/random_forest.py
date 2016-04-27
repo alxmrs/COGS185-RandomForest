@@ -619,14 +619,16 @@ def calc_freq(ys):
     :param ys: labels, or y values
     '''
     label = {}
+    total = 0
     for y in ys:
         if y not in label:
             label[y] = 0.0
         label[y] += 1
+        total += 1
     print(label)
 
     for k in label.keys():
-        label[k] = label[k] / D_y.shape[0]
+        label[k] = label[k] / total
 
     print(label)
 
